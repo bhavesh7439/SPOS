@@ -1,0 +1,124 @@
+
+mysql> use ass4;
+Database changed
+mysql> create table student(roll_no int primary key,name char(20),address char(40), phone into(10),age int(2));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'into(10),age int(2))' at line 1
+mysql> create table student(roll_no int primart key,name char(20), address char(40),phone int(10),age int(2));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'primart key,name char(20), address char(40),phone int(10),age int(2))' at line 1
+mysql>  create table student(roll_no int primary key,name char(20),address char(40), phone into(10),age int(2));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'into(10),age int(2))' at line 1
+mysql> create table student ;
+ERROR 4028 (HY000): A table must have at least one visible column.
+mysql>  create table student(roll_no int primary key,name char(20),address char(40), phone into(10),age int(2));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'into(10),age int(2))' at line 1
+mysql> create table student(roll_no int primary key,name char(20), address char(40), phone int(10),age int(2));
+Query OK, 0 rows affected, 2 warnings (0.04 sec)
+
+mysql> desc student;
++---------+----------+------+-----+---------+-------+
+| Field   | Type     | Null | Key | Default | Extra |
++---------+----------+------+-----+---------+-------+
+| roll_no | int      | NO   | PRI | NULL    |       |
+| name    | char(20) | YES  |     | NULL    |       |
+| address | char(40) | YES  |     | NULL    |       |
+| phone   | int      | YES  |     | NULL    |       |
+| age     | int      | YES  |     | NULL    |       |
++---------+----------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> insert into student values(1,'harsh','delhi','1111111111','18');
+Query OK, 1 row affected (0.01 sec)
+
+mysql>  insert into student values(1,'harsh','delhi','1111111111','18');
+ERROR 1062 (23000): Duplicate entry '1' for key 'student.PRIMARY'
+mysql>  insert into student values(2,'kapil','delhi','2222222222','17');
+ERROR 1264 (22003): Out of range value for column 'phone' at row 1
+mysql>  insert into student values(2,'kapil','latur','1111111111','17');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> desc student;
++---------+----------+------+-----+---------+-------+
+| Field   | Type     | Null | Key | Default | Extra |
++---------+----------+------+-----+---------+-------+
+| roll_no | int      | NO   | PRI | NULL    |       |
+| name    | char(20) | YES  |     | NULL    |       |
+| address | char(40) | YES  |     | NULL    |       |
+| phone   | int      | YES  |     | NULL    |       |
+| age     | int      | YES  |     | NULL    |       |
++---------+----------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> select * from student;
++---------+-------+---------+------------+------+
+| roll_no | name  | address | phone      | age  |
++---------+-------+---------+------------+------+
+|       1 | harsh | delhi   | 1111111111 |   18 |
+|       2 | kapil | latur   | 1111111111 |   17 |
++---------+-------+---------+------------+------+
+2 rows in set (0.00 sec)
+
+mysql> create table studentCourse( cid int(1) , roll_no int, foreign key(roll_no) references student(roll_no));
+Query OK, 0 rows affected, 1 warning (0.06 sec)
+
+mysql> desc StudentCourse;
++---------+------+------+-----+---------+-------+
+| Field   | Type | Null | Key | Default | Extra |
++---------+------+------+-----+---------+-------+
+| cid     | int  | YES  |     | NULL    |       |
+| roll_no | int  | YES  | MUL | NULL    |       |
++---------+------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> insert into StudentCourse values(1,1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into StudentCourse values(2,2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from StudentCourse;
++------+---------+
+| cid  | roll_no |
++------+---------+
+|    1 |       1 |
+|    2 |       2 |
++------+---------+
+2 rows in set (0.00 sec)
+
+mysql> select * from student left join StudentCourse on student.roll_no=StudentCourse.roll_no;
++---------+-------+---------+------------+------+------+---------+
+| roll_no | name  | address | phone      | age  | cid  | roll_no |
++---------+-------+---------+------------+------+------+---------+
+|       1 | harsh | delhi   | 1111111111 |   18 |    1 |       1 |
+|       2 | kapil | latur   | 1111111111 |   17 |    2 |       2 |
++---------+-------+---------+------------+------+------+---------+
+2 rows in set (0.01 sec)
+
+mysql> select * from student join StudentCourse;
++---------+-------+---------+------------+------+------+---------+
+| roll_no | name  | address | phone      | age  | cid  | roll_no |
++---------+-------+---------+------------+------+------+---------+
+|       2 | kapil | latur   | 1111111111 |   17 |    1 |       1 |
+|       1 | harsh | delhi   | 1111111111 |   18 |    1 |       1 |
+|       2 | kapil | latur   | 1111111111 |   17 |    2 |       2 |
+|       1 | harsh | delhi   | 1111111111 |   18 |    2 |       2 |
++---------+-------+---------+------------+------+------+---------+
+4 rows in set (0.00 sec)
+
+mysql> select * from student;
++---------+-------+---------+------------+------+
+| roll_no | name  | address | phone      | age  |
++---------+-------+---------+------------+------+
+|       1 | harsh | delhi   | 1111111111 |   18 |
+|       2 | kapil | latur   | 1111111111 |   17 |
++---------+-------+---------+------------+------+
+2 rows in set (0.00 sec)
+
+mysql> select a.name, b.roll_no from student a, student b where a.age<b.age;
++-------+---------+
+| name  | roll_no |
++-------+---------+
+| kapil |       1 |
++-------+---------+
+1 row in set (0.01 sec)
+
+mysql>

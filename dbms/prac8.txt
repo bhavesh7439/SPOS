@@ -1,0 +1,313 @@
+The final code is presented in two classes, as structured in the source material: the student class, which handles the JDBC connectivity and CRUD operations, and the first class, which contains the main method and the user menu interface.
+1. The student Class (Operations)
+This class includes all the methods for the database navigation operations (CRUD) and defines the necessary connection parameters and the global Scanner object for input within the operational methods.
+import java.sql.Connection; // Required for Connection interface [4]
+import java.sql.DriverManager; // Required for getConnection method [4]
+import java.sql.ResultSet; // Required for SELECT query results [5]
+import java.sql.Statement; // Required for Statement interface [2]
+import java.util.Scanner; // Required for user input [2, 3]
+
+public class student {
+
+    // Global variables for connectivity and table name
+    String TB_name; // Declared globally to be accessible across methods [6]
+    Scanner SC = new Scanner(System.in);
+
+    // Connection Details (Replace placeholders with actual values) [7, 8]
+    String URL = "jdbc:mySQL://LocalHost:3306/teachers"; // Example URL format [7]
+    String USERNAME = "root"; // Example username [8]
+    String PASSWORD = "your_password"; // Example password [8]
+
+    // =========================================================================
+    // CRUD OPERATION 1: CREATE DATABASE
+    // =========================================================================
+    public void createDatabase() {
+        // All connectivity operations must be inside a try-catch block [8, 9]
+        try {
+            // Stage 2: Establish Connection
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); [4, 9]
+            System.out.println("Connection established");
+
+            // Stage 3: Create a Statement
+            Statement st = con.createStatement(); [2]
+
+            // Ask user for DB name
+            System.out.println("Enter the database name"); [3]
+            String DB_name = SC.nextLine(); [3, 10]
+
+            // Stage 4: Execute Query (DDL)
+            String query = "create database " + DB_name; [10]
+            st.execute(query); [10]
+
+            System.out.println("Database created successfully");
+
+            // Stage 5: Close Connection
+            con.close(); [11]
+
+        } catch (Exception e) {
+            e.printStackTrace(); [9]
+        }
+    }
+
+    // =========================================================================
+    // CRUD OPERATION 2: CREATE TABLE
+    // =========================================================================
+    public void createTable() {
+        try {
+            // Stages 2 & 3: Connection and Statement setup
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            Statement st = con.createStatement();
+            
+            // Get Table Name
+            System.out.println("Enter the table name"); [6]
+            TB_name = SC.nextLine(); [6]
+
+            // Get Attributes and Data Types
+            System.out.println("Enter attributes and the data type (e.g., ID int, name Vare 20)"); [6]
+            String attributes = SC.nextLine(); [12]
+
+            // Stage 4: Execute Query (DDL)
+            // Query: create table TB_name (attributes) [6, 12]
+            String query = "create table " + TB_name + "(" + attributes + ")";
+            st.execute(query);
+
+            System.out.println("Table created successfully"); [12]
+            
+            // Stage 5: Close Connection
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =========================================================================
+    // CRUD OPERATION 3: INSERT DATA
+    // =========================================================================
+    public void insertData() {
+        try {
+            // Stages 2 & 3: Connection and Statement setup
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            Statement st = con.createStatement();
+
+            System.out.println("Enter the number of Records you wish to enter"); [13]
+            int n = SC.nextInt(); [13]
+            
+            // Crucial fix: Consume the newline left over by nextInt() [14, 15]
+            SC.nextLine(); 
+            
+            int record_count = 1;
+            
+            // Loop structure [13]
+            while (n > 0) {
+                System.out.println("Enter record " + record_count + " inside table " + TB_name); [11]
+                
+                String insert = SC.nextLine(); [16]
+                
+                // Query: insert into table_name values (record_values) [13, 16]
+                String query = "insert into " + TB_name + " values (" + insert + ")";
+                
+                st.execute(query); // Execute for DML [16]
+                
+                System.out.println("Record inserted successfully"); [14]
+                n--; // Decrement counter [11]
+                record_count++;
+            }
+            
+            // Stage 5: Close Connection
+            con.close(); [11]
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =========================================================================
+    // CRUD OPERATION 4: READ DATA (SELECT)
+    // =========================================================================
+    public void readData() {
+        try {
+            // Stages 2 & 3: Connection and Statement setup
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            Statement st = con.createStatement();
+            
+            // Query: select star from table_name [5]
+            String query = "select * from " + TB_name;
+            
+            // Stage 4: Execute Query returns a ResultSet [5, 17]
+            ResultSet RS = st.executeQuery(query); 
+
+            // Iterate through the results [17]
+            while (RS.next()) {
+                // Column numbers start from 1 [17]
+                int id = RS.getInt(1); // Assuming ID is the first column [17]
+                String name = RS.getString(2); // Assuming Name is the second column [18]
+                int salary = RS.getInt(3); // Assuming Salary is the third column [18]
+                
+                System.out.println("ID: " + id + ", Name: " + name + ", Salary: " + salary);
+            }
+
+            // Stage 5: Close Connection
+            con.close(); [18]
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // =========================================================================
+    // CRUD OPERATION 5: UPDATE DATA
+    // =========================================================================
+    public void updateData() {
+        try {
+            // Stages 2 & 3: Connection and Statement setup
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            Statement st = con.createStatement();
+            
+            System.out.println("Enter the attribute and its value you wish to update (e.g., name='Sarthik')"); [19]
+            String update = SC.nextLine(); [19]
+            
+            System.out.println("Enter the condition for updating (e.g., ID=1)"); [20]
+            String text = SC.nextLine(); [20]
+            
+            // Query: update table_name set [update_value] where [condition] [20]
+            String query = "update " + TB_name + " set " + update + " where " + text;
+            
+            // Stage 4: Execute Update is used for DML operations [17, 20]
+            st.executeUpdate(query); 
+            
+            System.out.println("Record updated successfully");
+
+            // Stage 5: Close Connection
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // =========================================================================
+    // CRUD OPERATION 6: DELETE DATA
+    // =========================================================================
+    public void deleteData() {
+        try {
+            // Stages 2 & 3: Connection and Statement setup
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            Statement st = con.createStatement();
+            
+            System.out.println("Enter the condition for deleting (e.g., ID=1)"); [21]
+            String Del = SC.nextLine(); [21]
+            
+            // Query: delete from table_name where [condition] [21]
+            String query = "delete from " + TB_name + " where " + Del;
+            
+            // Stage 4: Execute Update is used for DML operations [20]
+            st.executeUpdate(query);
+            
+            System.out.println("Record deleted successfully");
+            
+            // Stage 5: Close Connection
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+2. The first class (Main Execution)
+This class initializes the student object and runs the menu loop to allow the user to select the required database operation.
+import java.util.Scanner;
+
+public class firstclass {
+    public static void main(String[] args) {
+        
+        // Initialize the object of the student class [1, 23]
+        student S1 = new student();
+        
+        // Initialize Scanner for menu input [22]
+        Scanner SC = new Scanner(System.in);
+        int N; 
+
+        // Menu Display [22]
+        System.out.println("--- JDBC Connectivity Menu ---");
+        System.out.println("Enter 1 for creating database");
+        System.out.println("Enter 2 to create table");
+        System.out.println("Enter 3 to insert records");
+        System.out.println("Enter 4 to read records");
+        System.out.println("Enter 5 to update record");
+        System.out.println("Enter 6 to delete record");
+        
+        // Take menu input [22]
+        N = SC.nextInt();
+
+        // Use if/else if structure to call methods based on input [24]
+        if (N == 1) {
+            S1.createDatabase();
+        } else if (N == 2) {
+            S1.createTable();
+        } else if (N == 3) {
+            S1.insertData();
+        } else if (N == 4) {
+            S1.readData();
+        } else if (N == 5) {
+            S1.updateData();
+        } else if (N == 6) {
+            S1.deleteData();
+        } else {
+            System.out.println("Invalid input"); [24]
+        }
+        
+        SC.close();
+    }
+}
+create a proper code for first class
+
+The first class serves as the main entry point (main method) for the application, handling the initialization of the student class object and presenting the user menu for selecting the desired database operation.
+The code for first class, based on the procedure outlined in the sources, is as follows:
+import java.util.Scanner; // Import required for user input [2]
+
+public class firstclass {
+    public static void main(String[] args) {
+        
+        // Initialize the object of the student class [3, 4]
+        // This object holds all the JDBC operational methods (CRUD)
+        student S1 = new student();
+        
+        // Initialize Scanner and variable N for menu input [2]
+        Scanner SC = new Scanner(System.in);
+        int N; 
+
+        // Display the Menu options [2]
+        System.out.println("--- Menu ---");
+        // Note: The source specifically uses "s out sorry H is out" and then lists the options [2].
+        System.out.println("Enter 1 for creating database");
+        System.out.println("Enter 2 to create table");
+        System.out.println("Enter 3 to insert records");
+        System.out.println("Enter 4 to read records");
+        System.out.println("Enter 5 to update record");
+        System.out.println("Enter 6 to delete record");
+        
+        // Take menu input N [2]
+        N = SC.nextInt();
+
+        // Use if/else if structure to call methods based on input [5]
+        if (N == 1) {
+            S1.createDatabase(); // Call method for creating database [3, 5]
+        } else if (N == 2) {
+            S1.createTable(); // Call method for creating table [5]
+        } else if (N == 3) {
+            S1.insertData(); // Call method for inserting records [5]
+        } else if (N == 4) {
+            S1.readData(); // Call method for reading records [5]
+        } else if (N == 5) {
+            S1.updateData(); // Call method for updating records [5]
+        } else if (N == 6) {
+            S1.deleteData(); // Call method for deleting records [5]
+        } else {
+            System.out.println("invalid input"); // Default error message [5]
+        }
+        
+        // Close the Scanner resource
+        SC.close();
+    }
+}
