@@ -79,3 +79,72 @@ db.library.save({
     name: "save query",
     cost: 10000
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+db.Student.drop();
+
+// createCollection is optional, insertMany will do it
+db.Student.insertMany([
+    {'Rno': 1, 'Name': 'Piyush','Class':'TE COMP'},
+    {'Rno': 2, 'Name': 'Abhi', 'Class': 'TE COMP'},
+    {'Rno': 3, 'Name': 'Ashley', 'Class':'TE COMP'},
+    {'Rno': 4, 'Name': 'Hitesh','Class': 'TE COMP'},
+    {'Rno': 5, 'Name': 'Pratik', 'Class':'TE COMP'},
+    {'Rno': 6, 'Name': 'Pratik', 'Class':'TE COMP'}
+]);
+
+print("--- Initial Documents ---");
+db.Student.find().pretty();
+
+// Use updateOne (modern command)
+db.Student.updateOne({'Name':'Hitesh'}, {$set: {'Name':'Henry'}});
+
+print("--- After Update ---");
+db.Student.find().pretty(); 
+
+// Use deleteMany (modern command). 
+// This will return 0, as no doc has this field.
+db.Student.deleteMany({'ADD':'MP'});
+
+// This is the FIX for your save() command
+// We use replaceOne to update/insert a doc with a specific _id
+// Note: This inserts a doc with RNO as a string, which is inconsistent.
+// For a lab, this is likely what you intended.
+db.Student.replaceOne(
+   { _id: ObjectId("5b8fad4ef00832a0a50b5036") },
+   { "RNO": "1", "NAME": "PIYUSH", "CLASS": "TE COMP", "ADD": "MP" },
+   { upsert: true }
+);
+
+print("--- After replaceOne (save) ---");
+db.Student.find().pretty();
+
+print("--- Find Piyush AND Rno 1 (using number) ---");
+db.Student.find({$and:[{"Name":"Piyush"}, {"Rno": 1}]}).pretty();
+
+print("--- Find Piyush OR Rno 2 ---");
+db.Student.find({$or:[{"Name":"Piyush"},{"Rno": 2}]}).pretty();
+
+// --- Numeric Range Queries (Now they work correctly) ---
+print("--- Find Rno > 5 (using number) ---");
+db.Student.find( {"Rno": { $gt: 5}}).pretty();
+
+print("--- Find Rno < 5 (using number) ---");
+db.Student.find( {"Rno": { $lt: 5}}).pretty();
+
+print("--- Find Rno between 2 and 5 (gte, lte) ---");
+db.Student.find( {"Rno": { $lte: 5, $gte: 2}}).pretty();
