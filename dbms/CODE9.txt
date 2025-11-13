@@ -1,0 +1,81 @@
+// A. Initial Setup and Database Operations (Source 1)
+mongod
+mongo
+use as 10
+
+// B. Collection Creation (Source 2)
+db.createCollection("library")
+
+// C. Document Creation (Insert Operations) (Source 2)
+// Note: This command was corrected in the narrative for string quotation
+db.library.insert({ bid: 1, name: "c++" })
+db.library.insert({ bid: 2, name: "java" })
+db.library.insert({ bid: 3, name: "python" })
+
+// D. Read Operations (Source 3)
+db.library.find()
+db.library.find().pretty()
+
+// E. Update Operation (Source 3)
+db.library.update(
+    { name: "python" },
+    { $set: { name: "python 3.7" } }
+)
+
+// F. Verification of Update (Source 4)
+db.library.find()
+
+// G. Delete Operation (Remove) (Source 4)
+db.library.remove({ bid: 1 })
+
+// H. Verification of Delete (Source 4)
+db.library.find()
+
+// I. Specific Search (Source 4)
+db.library.find({ name: "java" })
+
+// J. Inserting a Document for Logical Testing (Source 5)
+db.library.insert({ bid: 4, name: "java", description: "fake book" })
+
+// K. Logical AND Operator (Source 5)
+db.library.find({ $and: [ { name: "java" }, { bid: 2 } ] })
+
+// L. Logical OR Operator (Source 6)
+db.library.find({ $or: [ { name: "java" }, { description: "fake book" } ] })
+
+// M. Inserting Documents for Comparison Testing (Source 7)
+db.library.insert({ name: "my story", cost: 500 })
+db.library.insert({ name: "my story 2.0", cost: 800 })
+db.library.insert({ name: "my story beta version", cost: 50 })
+
+// N. Verification of New Documents (Source 8)
+db.library.find()
+
+// O. Comparison Operator ($gte: Greater Than Equal) (Source 8)
+db.library.find({ cost: { $gte: 100 } })
+
+// P. Comparison Operator ($in: In List) (Source 8)
+db.library.find({ cost: { $in: [ 100, 200, 300, 500 ] } })
+
+// Q. Comparison Operator ($nin: Not In List) (Source 8)
+db.library.find({ cost: { $nin: [ 100, 200, 300, 500 ] } })
+
+// R. Save Method (Insert with Custom Object ID) (Source 9, 10)
+// Note: The actual Object ID must be 24 characters in hex code format
+db.library.save({
+    _id: "123456789abcdef...", // Example placeholder ID
+    bid: 6,
+    name: "save query",
+    cost: 10000
+})
+
+// S. Verification of Save (Source 10)
+db.library.find()
+
+// T. Save Method (Update existing document using same Object ID) (Source 10)
+db.library.save({
+    _id: "123456789abcdef...", // Example placeholder ID used for modification
+    bid: 6,
+    name: "save query",
+    cost: 10000
+})
